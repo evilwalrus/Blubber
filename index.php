@@ -302,6 +302,6 @@ class TestApi extends \Blubber\App
 
 $api = new TestApi(['v1', 'v2', 'v3']);
 $api->deprecateNamespaces(['v1', 'v2']);
-$api->run();
+$api->process();
 
 ?>
