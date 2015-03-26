@@ -28,7 +28,7 @@ namespace Blubber\Locale;
 class en_US
 {
 
-    static $lang = [
+    protected static $lang = [
         'error_invalid_method'           => 'Method "%s" not found in class "%s"',
         'error_method_not_allowed'       => 'Requested HTTP method not allowed/implemented for this route',
         'error_invalid_user_agent'       => 'Valid user agent required for access',
