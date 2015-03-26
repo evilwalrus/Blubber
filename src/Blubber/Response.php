@@ -223,15 +223,12 @@ class Response
                 extension_loaded('zlib') &&
                 array_key_exists('gzip', Request::getAcceptEncoding()))
             {
-                ob_start("ob_gzhandler");
-                echo $data;
-                ob_end_flush();
-            } else {
-                echo $data;
+                ob_start('ob_gzhandler');
             }
-        }
 
-        exit;
+            echo $data;
+            exit;
+        }
     }
 
     /**
