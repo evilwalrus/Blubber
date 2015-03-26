@@ -22,22 +22,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * TODO:
- *
- * - Remove all auth stuff and completely rethink/recode it.
- * - Refactor this App class.  Fragment the code, and move it out accordingly.
- * - This class needs to be a core model, not a "do everything" model.
- *
- */
-
 namespace Blubber;
 
 const DATE_RFC1123 = 'D, d M Y H:i:s \G\M\T';
 
 const PROJECT_NAME = 'Blubber';
 const PROJECT_URL = 'https://github.com/evilwalrus/Blubber';
-const PROJECT_VERSION = '1.0.0_b3';
+const PROJECT_VERSION = '1.0.0-rc.1';
 
 use Blubber\Exceptions\HTTPException;
 
@@ -458,11 +449,11 @@ class App extends Request
     }
 
     /**
-     * Run all callbacks, handlers, etc.
+     * Process all callbacks, handlers, etc.
      *
      * @return void
      */
-    public function run()
+    public function process()
     {
 
         self::_checkRequiredHeaders(self::getRequiredHeaders(), self::getHeaders());

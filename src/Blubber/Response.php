@@ -219,14 +219,16 @@ class Response
         $this->_processHeaders([$primaryHeaders, $addedHeaders, $this->_headers]);
 
         if ($this->_validForSend($reqMethod)) {
-            if (App::getOption('use_output_compression') && extension_loaded('zlib')) {
-                // ob_gzhandler sets the following headers for us:
-                //  - Content-Encoding
-                //  - Vary
-                ob_start('ob_gzhandler');
+            if (App::getOption('use_output_compression') &&
+                extension_loaded('zlib') &&
+                array_key_exists('gzip', Request::getAcceptEncoding()))
+            {
+                ob_start("ob_gzhandler");
+                echo $data;
+                ob_end_flush();
+            } else {
+                echo $data;
             }
-
-            echo $data;
         }
 
         exit;

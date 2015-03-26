@@ -30,7 +30,7 @@ class TestApi extends \Blubber\App
 {
 
     private $options = array(
-        'use_output_compression'  => true,
+        'use_output_compression'  => false, // set to 'true' to use builtin gzip; otherwise, use apache's gzip
         'require_user_agent'      => false,
         'redirect_old_namespaces' => true,
     );
@@ -129,6 +129,9 @@ class TestApi extends \Blubber\App
             $private_key = 'ac3a7cfd3b2d73c74e3b7798df03e2b7d829514ea4cf624c08a9b722decbcddd';
 
             if ($private_key !== null) {
+                // setup our HMAC object
+                $hmac = new \Blubber\HMAC($public_key, $private_key);
+
                 //
                 // Calculate the content hash; this must be the same method the client used to hash the content.
                 // Whole request URI (including query string and starting slash) concat with public key.
@@ -136,13 +139,10 @@ class TestApi extends \Blubber\App
                 //  api endpoint is -> https://localhost
                 //  request uri is  -> /v3/hmac_test
                 //
-                $content = $this->getRequestUri() . $public_key;
+                $hmac->setContent($this->getRequestUri() . $public_key);
+                $content_hash = $hmac->getSignature();
 
-                $content_hash = hash_hmac('sha256', $content, $private_key);
-
-                // See http://php.net/manual/en/function.hash-equals.php#115664 for backwards compatibility
-                //if (hash_equals($hash_header, $content_hash)) {
-                if ($hash_header === $content_hash) {
+                if ($hmac->hashEquals($hash_header)) {
                     //
                     // Normally we'd send 'true' as a response to show that the user is verified, but
                     // we'll send back some data just to verify the data is being sent through properly
@@ -302,6 +302,6 @@ class TestApi extends \Blubber\App
 
 $api = new TestApi(['v1', 'v2', 'v3']);
 $api->deprecateNamespaces(['v1', 'v2']);
-$api->run();
+$api->process();
 
 ?>
