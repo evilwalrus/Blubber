@@ -57,7 +57,7 @@ class App extends Request
     protected $_currRoute        = null;
     protected $_currMethod       = null;
     private   $_methods          = ['get', 'head', 'options', 'post', 'patch', 'put', 'delete'];
-    static    $_options          = [];
+    protected static $_options   = [];
     protected $_content          = null;
     private   $_requiredHeaders  = [];
 

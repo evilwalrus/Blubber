@@ -28,7 +28,7 @@ namespace Blubber;
 class I18n
 {
 
-    static $locale = 'en-US';
+    protected static $locale = 'en-US';
 
     public static function hasLocale()
     {

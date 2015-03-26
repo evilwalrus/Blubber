@@ -38,8 +38,8 @@ use Blubber\Exceptions\HTTPException;
  */
 class JSON
 {
-    static $_contentType = 'application/json';
-    static $_data        = '';
+    protected static $_contentType = 'application/json';
+    protected static $_data        = '';
 
     public static function encode(array $message = [])
     {
