@@ -410,7 +410,6 @@ class App extends Request
      */
     protected function runMethodCallback(Route $route, $callback, $params)
     {
-        $headers = [];
         $closure = $callback['callback'];
         $allow_header = ['Allow' => strtoupper(join(', ', $route->getAvailableMethods()))];
 

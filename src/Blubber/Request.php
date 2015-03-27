@@ -68,30 +68,6 @@ abstract class Request
     }
 
     /**
-     * Check if the request was done securely
-     *
-     * @return bool
-     */
-    public static function isSecure()
-    {
-        return !!(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off');
-    }
-
-    /**
-     * Check if the request was made via AJAX
-     *
-     * @return bool
-     */
-    public static function isAjax()
-    {
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-            return !!(strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
-        }
-
-        return false;
-    }
-
-    /**
      * Return the requested HTTP version
      *
      * @return float
@@ -180,32 +156,6 @@ abstract class Request
     {
         return isset($_SERVER['HTTP_ACCEPT_ENCODING']) ?
             self::_parseHeaderValue($_SERVER['HTTP_ACCEPT_ENCODING']) : null;
-    }
-
-    /**
-     * Get the HTTP cookies for the current request
-     *
-     * @param  null       $cookieName
-     * @return array|null
-     */
-    public function getCookies($cookieName = null)
-    {
-        $out = [];
-        $cookies = static::getHeader('Cookie');
-
-        if (!is_null($cookies)) {
-            foreach (explode(';', $cookies) as $k => $v) {
-                $out[$k] = trim(urldecode($v));
-            }
-
-            if (!empty($cookieName)) {
-                return isset($out[$cookieName]) ? $out[$cookieName] : null;
-            } else {
-                return $out;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -399,17 +349,6 @@ abstract class Request
     public function getContentRaw()
     {
         return static::$_data;
-    }
-
-    /**
-     * Load the ?timestamp=... from the query string
-     *
-     * @return mixed|null
-     */
-
-    public function getTimestamp()
-    {
-        return isset($_REQUEST['timestamp']) ? $_REQUEST['timestamp'] : null;
     }
 
     public function getAuthorization()
