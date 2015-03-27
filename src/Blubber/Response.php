@@ -191,34 +191,34 @@ class Response
      */
     public function send($addedHeaders = [])
     {
-
-        $data = JSON::encode(self::getContent());
+        $content = self::getContent();
+        $data = JSON::encode($content);
 
         $reqMethod = strtolower(App::getRequestMethod());
-        $primaryHeaders = [];
+        $headers = array_merge($this->_headers, $addedHeaders);
 
         // if the content has no body, switch the http code to a 204 No Content status
         $statusCode = (!in_array($reqMethod, $this->_noBody)) ? $this->_httpCode : 204;
 
         http_response_code($statusCode);
 
-        $primaryHeaders['Status']        = sprintf('%d %s', $statusCode, $this->_validCodes[$statusCode]);
-        $primaryHeaders['X-Powered-By']  = sprintf('%s/%s (%s)', PROJECT_NAME, PROJECT_VERSION, PROJECT_URL);
-        $primaryHeaders['ETag']          = '"' . md5($data) . '"';
+        $headers['Status']        = sprintf('%d %s', $statusCode, $this->_validCodes[$statusCode]);
+        $headers['X-Powered-By']  = sprintf('%s/%s (%s)', PROJECT_NAME, PROJECT_VERSION, PROJECT_URL);
 
-        if ($this->_validForSend($reqMethod)) {
-            $primaryHeaders['Content-Language'] = I18n::getLocale();
-            $primaryHeaders['Content-Type']   = JSON::getContentType();
-            $primaryHeaders['Content-Length'] = strlen($data);
-            $primaryHeaders['Content-MD5']    = base64_encode(md5($data, true));
+        if ($this->_validForSend($reqMethod) && !empty($content)) {
+            $headers['ETag']             = '"' . md5($data) . '"';
+            $headers['Content-Language'] = I18n::getLocale();
+            $headers['Content-Type']     = JSON::getContentType();
+            $headers['Content-Length']   = strlen($data);
+            $headers['Content-MD5']      = base64_encode(md5($data, true));
         }
 
-        $primaryHeaders['X-Request-ID'] = App::getRequestId();
+        $headers['X-Request-ID'] = App::getRequestId();
 
         // process and output all of our response headers
-        $this->_processHeaders([$primaryHeaders, $addedHeaders, $this->_headers]);
+        $this->_processHeaders($headers);
 
-        if ($this->_validForSend($reqMethod)) {
+        if ($this->_validForSend($reqMethod) && !empty($content)) {
             if (App::getOption('use_output_compression') &&
                 extension_loaded('zlib') &&
                 array_key_exists('gzip', Request::getAcceptEncoding()))
@@ -239,23 +239,19 @@ class Response
      */
     private function _validForSend($method)
     {
-        return (!in_array($method, $this->_noBody) || $this->_httpCode != 304);
+        return (!in_array($method, $this->_noBody));
     }
 
     /**
-     * Process an array of arrays to be sent for headers
+     * Process an array of headers to be sent
      *
      * @param  array $headers
      * @return void
      */
     private function _processHeaders(array $headers)
     {
-        foreach ($headers as $set) {
-            if (!empty($set)) {
-                foreach ($set as $k => $v) {
-                    header(sprintf('%s: %s', $k, $v), true);
-                }
-            }
+        foreach ($headers as $k => $v) {
+            header(sprintf('%s: %s', $k, $v), true);
         }
     }
 

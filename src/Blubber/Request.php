@@ -377,12 +377,6 @@ abstract class Request
      */
     public function setContent($data)
     {
-        $cType = static::getHeader('Content-Type');
-
-        if (empty($cType)) {
-            throw new HTTPException(t('error_unsupported_media'), 415);
-        }
-
         static::$_data = $data;
     }
 
@@ -394,31 +388,7 @@ abstract class Request
      */
     public function getContent()
     {
-        //
-        // TODO: set content-type static variable.  Content type can have multiple values; must be parsed out
-        //  like the accept headers
-        //
-        $cType = static::getHeader('Content-Type');
-        $data = urldecode(static::$_data);
-
-        //
-        // TODO: make this dynamic
-        //
-        switch ($cType) {
-            default:
-            case 'application/json':
-                return JSON::decode($data);
-
-            case 'form-data':
-            case 'multipart/form-data':
-                // TODO: Make a multipart message parser
-                throw new HTTPException(t('error_unsupported_media'), 415);
-
-            case 'application/x-www-form-urlencoded':
-                $out = [];
-                parse_str($data, $out);
-                return $out;
-        }
+        return JSON::decode(urldecode(static::$_data));
     }
 
     /**

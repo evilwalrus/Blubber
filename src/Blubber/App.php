@@ -144,7 +144,7 @@ class App extends Request
         // Define default class options here
         //
         self::$_options = [
-            'use_output_compression'  => true,
+            'use_output_compression'  => false,
             'require_user_agent'      => false,
             'redirect_old_namespaces' => true
         ];
@@ -410,6 +410,7 @@ class App extends Request
      */
     protected function runMethodCallback(Route $route, $callback, $params)
     {
+        $headers = [];
         $closure = $callback['callback'];
         $allow_header = ['Allow' => strtoupper(join(', ', $route->getAvailableMethods()))];
 
@@ -433,7 +434,21 @@ class App extends Request
                 }
 
                 // Add a deprecation warning header if we are using a deprecated namespace
-                self::_checkOldNamespaces();
+                $oldNamespaces = self::getDeprecatedNamespaces();
+
+                if (!empty($oldNamespaces) && in_array($this->getNamespace(), $oldNamespaces)) {
+
+                    // these headers will be added to all requests with a deprecated namespace
+                    $headers['X-Blubber-Warn']    = t('warn_deprecated_namespace');
+                    $headers['X-Blubber-Upgrade'] = self::getActiveNamespace();
+
+                    if (self::getOption('redirect_old_namespaces')) {
+                        $headers['Location'] = '/' . self::getActiveNamespace() . '/' . self::getRequestPath();
+
+                        // change the response to a 301 (no data) and forward the user
+                        $response->write(301, [])->send($headers);
+                    }
+                }
 
                 try {
                     $response->send($headers);
@@ -506,28 +521,6 @@ class App extends Request
     protected function getCurrentRoute()
     {
         return $this->_routes[$this->_currRoute->getHash()];
-    }
-
-    /**
-     * Check for deprecated namespaces
-     *
-     * @return void
-     */
-    protected function _checkOldNamespaces()
-    {
-        $headers = [];
-        $oldNamespaces = self::getDeprecatedNamespaces();
-
-        if (!empty($oldNamespaces) && in_array($this->getNamespace(), $oldNamespaces)) {
-            if (self::getOption('redirect_old_namespaces')) {
-                (new Response())->write(301)->send([
-                    'Location' => '/' . self::getActiveNamespace() . '/' . self::getRequestPath()
-                ]);
-            }
-
-            $headers['X-Blubber-Warn']    = t('warn_deprecated_namespace');
-            $headers['X-Blubber-Upgrade'] = self::getActiveNamespace();
-        }
     }
 
     /**

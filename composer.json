@@ -10,13 +10,16 @@
       "name": "Andrew Heebner",
       "email": "andrew.heebner@gmail.com",
       "homepage": "https://github.com/evilwalrus",
-      "role": "developer"
+      "role": "Lead Developer"
     }
   ],
   "require": {
     "php": ">=5.4.0"
   },
   "autoload": {
+    "classmap": ["src/"],
     "psr-0": { "Blubber": "src/" }
-  }
+  },
+  "prefer-stable": true
+
 }
