@@ -43,7 +43,7 @@ class en_US
         'error_auth_scheme_not_allowed'  => 'Authorization scheme not allowed',
         'error_missing_required_headers' => 'Missing required headers',
         'error_unsupported_media'        => 'Missing or unsupported media; Check Content-Type header for accuracy',
-        'warn_deprecated_namespace'      => 'Namespace is deprecated; please use current namespace to avoid errors',
+        'warn_deprecated_namespace'      => 'Namespace is deprecated; please use current namespace noted in X-Blubber-Upgrade',
     ];
 
     public static function lang($key)
