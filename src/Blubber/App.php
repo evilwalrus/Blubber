@@ -146,7 +146,8 @@ class App extends Request
         self::$_options = [
             'use_output_compression'  => false,
             'require_user_agent'      => false,
-            'redirect_old_namespaces' => true
+            'redirect_old_namespaces' => true,
+            'require_https'           => true,
         ];
 
         foreach ($options as $option => $value) {
@@ -351,6 +352,20 @@ class App extends Request
     }
 
     /**
+     * Check if we're running under SSL (if option enabled)
+     *
+     * @return void
+     */
+    protected function _checkRequireSSL()
+    {
+        if (self::getOption('require_https')) {
+            if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+                self::emit('error', [new HTTPException(t('error_require_https'), 400)]);
+            }
+        }
+    }
+
+    /**
      * Check for required headers (if option enabled)
      *
      * @param  array $search
@@ -442,9 +457,12 @@ class App extends Request
                     $headers['X-Blubber-Upgrade'] = self::getActiveNamespace();
 
                     if (self::getOption('redirect_old_namespaces')) {
+                        //
+                        // TODO: Append query string here if we have one.  Location must match users request exactly.
+                        //
                         $headers['Location'] = '/' . self::getActiveNamespace() . '/' . self::getRequestPath();
 
-                        // change the response to a 301 (no data) and forward the user
+                        // change the response to a 301 (w/ no data) and forward the user
                         $response->write(301, [])->send($headers);
                     }
                 }
@@ -469,7 +487,7 @@ class App extends Request
      */
     public function process()
     {
-
+        self::_checkRequireSSL();
         self::_checkRequiredHeaders(self::getRequiredHeaders(), self::getHeaders());
         self::_checkUserAgent();
 
