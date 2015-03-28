@@ -3,3 +3,4 @@ filter:
         - index.php
         - autoloader.php
         - SplClassLoader.php
+        - src/Blubber/Request.php
