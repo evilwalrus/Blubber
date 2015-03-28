@@ -221,7 +221,7 @@ class Response
         $headers['X-Request-ID'] = App::getRequestId();
 
         // process and output all of our response headers
-        $this->_processHeaders($headers);
+        self::_processHeaders($headers);
 
         if ($this->_validForSend($reqMethod) && !empty($content)) {
             if (App::getOption('use_output_compression') &&
@@ -236,7 +236,7 @@ class Response
                 echo $data;
 
                 ob_end_flush(); // clear inner
-                header('Content-Length: ' . ob_get_length(), true);
+                self::_processHeaders($calcContentHeaders(ob_get_contents()));
                 ob_end_flush(); // clear outer
             }
 
