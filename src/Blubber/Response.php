@@ -197,6 +197,13 @@ class Response
         $reqMethod = strtolower(App::getRequestMethod());
         $headers = array_merge($this->_headers, $addedHeaders);
 
+        $calcContentHeaders = function($data) {
+            return [
+                'ETag' => '"' . md5($data) . '"',
+                'Content-Length' => strlen($data)
+            ];
+        };
+
         // if the content has no body, switch the http code to a 204 No Content status
         $statusCode = (!in_array($reqMethod, $this->_noBody)) ? $this->_httpCode : 204;
 
@@ -206,11 +213,9 @@ class Response
         $headers['X-Powered-By']  = sprintf('%s/%s (%s)', PROJECT_NAME, PROJECT_VERSION, PROJECT_URL);
 
         if ($this->_validForSend($reqMethod) && !empty($content)) {
-            $headers['ETag']             = '"' . md5($data) . '"';
             $headers['Content-Language'] = I18n::getLocale();
             $headers['Content-Type']     = JSON::getContentType();
-            $headers['Content-Length']   = strlen($data);
-            $headers['Content-MD5']      = base64_encode(md5($data, true));
+            $headers += $calcContentHeaders($data);
         }
 
         $headers['X-Request-ID'] = App::getRequestId();
@@ -223,11 +228,19 @@ class Response
                 extension_loaded('zlib') &&
                 array_key_exists('gzip', Request::getAcceptEncoding()))
             {
+                // clear output buffers
+                while (ob_get_level()) ob_end_clean();
+
+                ob_start();
                 ob_start('ob_gzhandler');
+                echo $data;
+
+                ob_end_flush(); // clear inner
+                header('Content-Length: ' . ob_get_length(), true);
+                ob_end_flush(); // clear outer
             }
 
             echo $data;
-            exit;
         }
     }
 
