@@ -78,13 +78,23 @@ abstract class Request
     }
 
     /**
+     * Is this request secure?
+     *
+     * @return bool
+     */
+    public static function isSecure()
+    {
+        return (isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'on');
+    }
+
+    /**
      * Get the requester's IP address
      *
      * @return null|float
      */
     public static function getRemoteAddr()
     {
-        return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+        return $_SERVER['REMOTE_ADDR'];
     }
 
     /**

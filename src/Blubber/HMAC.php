@@ -38,7 +38,6 @@ namespace Blubber;
  * @license     MIT
  * @package     Blubber
  */
-
 class HMAC
 {
 
@@ -47,38 +46,62 @@ class HMAC
     private $content     = '';
 
 
+    /**
+     * @param $public_key
+     * @param $private_key
+     */
     public function __construct($public_key, $private_key)
     {
         self::setPublicKey($public_key);
         self::setPrivateKey($private_key);
     }
 
+    /**
+     * @param $public_key
+     */
     public function setPublicKey($public_key)
     {
         $this->public_key = $public_key;
     }
 
+    /**
+     * @param $private_key
+     */
     public function setPrivateKey($private_key)
     {
         $this->private_key = $private_key;
     }
 
+    /**
+     * @param $content
+     */
     public function setContent($content)
     {
         $this->content = $content;
     }
 
+    /**
+     * @return string
+     */
     public function getContent()
     {
         return $this->content;
     }
 
+    /**
+     * @return string
+     */
     public function getSignature()
     {
         // TODO:  Allow user to set their own algorithm from hash_algos()
         return hash_hmac('sha256', $this->content, $this->private_key);
     }
 
+    /**
+     * @param $compared_hash
+     *
+     * @return bool
+     */
     public function hashEquals($compared_hash)
     {
         if (!function_exists('hash_equals')) { // hash_equals is only available in 5.6.0+

@@ -359,7 +359,7 @@ class App extends Request
     protected function _checkRequireSSL()
     {
         if (self::getOption('require_https')) {
-            if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+            if (!self::isSecure()) {
                 self::emit('error', [new HTTPException(t('error_require_https'), 400)]);
             }
         }
