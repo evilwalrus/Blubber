@@ -30,7 +30,7 @@ class TestApi extends \Blubber\App
 {
 
     private $options = array(
-        'use_output_compression'  => false, // set to 'true' to use builtin gzip; otherwise, use apache's gzip
+        'use_output_compression'  => true, // set to 'true' to use builtin gzip; otherwise, use apache's gzip
         'require_user_agent'      => false,
         'redirect_old_namespaces' => true,
         'require_https'           => true,
