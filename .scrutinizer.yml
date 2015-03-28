@@ -1,6 +1,4 @@
 filter:
     excluded_paths:
-        - index.php
-        - autoloader.php
-        - SplClassLoader.php
-        - src/Blubber/Request.php
+	- doc/
+	- examples/

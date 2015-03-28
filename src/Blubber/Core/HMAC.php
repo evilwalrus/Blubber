@@ -22,7 +22,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Blubber;
+namespace Blubber\Core;
 
 /**
  * TODO:  All error-handling needs to be added

@@ -181,7 +181,7 @@ class TestApi extends \Blubber\App
         //
         // This must be nothing more than a backslash.  If you add variables, you overwrite all the below routes
         //
-        $this->route('/', function () {
+        $this->route('/', function() {
             $this->get(function ($request, $response, $params) {
 
                 $response->write(200, ['message' => 'Welcome Home']);

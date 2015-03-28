@@ -22,7 +22,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Blubber;
+namespace Blubber\Core;
+
+use Blubber\App;
 
 /**
  * Route class
@@ -144,7 +146,7 @@ class Route
     /**
      * Check the current namespace against the allowed namespaces for a route
      *
-     * @param  App $request
+     * @param  \Blubber\Core\Request $request
      * @return bool
      */
     public function isValidNamespace($request)

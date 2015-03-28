@@ -30,6 +30,11 @@ const PROJECT_NAME = 'Blubber';
 const PROJECT_URL = 'https://github.com/evilwalrus/Blubber';
 const PROJECT_VERSION = '1.0.0-rc.1';
 
+use Blubber\Core\I18n;
+use Blubber\Core\Request;
+use Blubber\Core\Response;
+use Blubber\Core\Route;
+use Blubber\Core\Tools;
 use Blubber\Exceptions\HTTPException;
 
 //
@@ -457,9 +462,6 @@ class App extends Request
                     $headers['X-Blubber-Upgrade'] = self::getActiveNamespace();
 
                     if (self::getOption('redirect_old_namespaces')) {
-                        //
-                        // TODO: Append query string here if we have one.  Location must match users request exactly.
-                        //
                         $headers['Location'] = '/' . self::getActiveNamespace() . '/' . self::getRequestPath();
 
                         // change the response to a 301 (w/ no data) and forward the user

@@ -22,7 +22,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Blubber\Transport;
+namespace Blubber\Core\Transport;
 
 use Blubber\Exceptions\HTTPException;
 

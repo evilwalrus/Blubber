@@ -22,10 +22,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Blubber;
+namespace Blubber\Core;
 
+use Blubber\App;
+use Blubber\Core\Transport\JSON;
 use Blubber\Exceptions\HTTPException;
-use Blubber\Transport\JSON;
 
 /**
  * Response class
@@ -210,7 +211,7 @@ class Response
         http_response_code($statusCode);
 
         $headers['Status']        = sprintf('%d %s', $statusCode, $this->_validCodes[$statusCode]);
-        $headers['X-Powered-By']  = sprintf('%s/%s (%s)', PROJECT_NAME, PROJECT_VERSION, PROJECT_URL);
+        $headers['X-Powered-By']  = sprintf('%s/%s (%s)', \Blubber\PROJECT_NAME, \Blubber\PROJECT_VERSION, \Blubber\PROJECT_URL);
 
         if ($this->_validForSend($reqMethod) && !empty($content)) {
             $headers['Content-Language'] = I18n::getLocale();

@@ -22,10 +22,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Blubber;
+namespace Blubber\Core;
 
+use Blubber\Core\Transport\JSON;
 use Blubber\Exceptions\HTTPException;
-use Blubber\Transport\JSON;
 
 /**
  * Request class
