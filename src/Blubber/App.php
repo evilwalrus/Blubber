@@ -89,12 +89,11 @@ class App extends Request
         static::$_requestPath     = self::normalizePath($_SERVER['REQUEST_URI']);
         static::$_requestId       = Tools::generateUUID();
 
+        // TODO: allow user to switch this off or force a language.
         //
-        // TODO: Check to see if the client sent a specified language to set
+        // Get I18n ready for strings
         //
-        //   Complete this after we have more information on proper Accept-Language input
-        //   and how we can send the proper Response.
-        //
+        I18n::init();
 
         self::_handleEvents();
 
@@ -124,8 +123,11 @@ class App extends Request
             }
         }
 
+        //
+        // TODO: Convert this to a 500 Server Error
+        //
         // if we get here, trigger a PHP error
-        trigger_error(sprintf(t('error_invalid_method'), $method, __CLASS__), E_USER_ERROR);
+        trigger_error(sprintf(t('invalid.method'), $method, __CLASS__), E_USER_ERROR);
     }
 
     /**
@@ -365,7 +367,7 @@ class App extends Request
     {
         if (self::getOption('require_https')) {
             if (!self::isSecure()) {
-                self::emit('error', [new HTTPException(t('error_require_https'), 400)]);
+                self::emit('error', [new HTTPException(t('require.https'), 400)]);
             }
         }
     }
@@ -389,7 +391,7 @@ class App extends Request
             }
 
             if (!empty($errArr)) {
-                $errMsg = t('error_missing_required_headers') . ': ' . join(', ', $errArr);
+                $errMsg = t('missing.required.headers') . ': ' . join(', ', $errArr);
                 self::emit('error', [new HTTPException($errMsg, 400)]);
             }
         }
@@ -411,10 +413,10 @@ class App extends Request
                     $_uaCheck = self::emit('__USER_AGENT__', [$_ua]);
 
                     if ($_uaCheck === false) {
-                        self::emit('error', [new HTTPException(t('error_invalid_user_agent'), 400)]);
+                        self::emit('error', [new HTTPException(t('invalid.user.agent'), 400)]);
                     }
                 } else {
-                    self::emit('error', [new HTTPException(t('error_invalid_user_agent'), 400)]);
+                    self::emit('error', [new HTTPException(t('invalid.user.agent'), 400)]);
                 }
             }
             // allow all requests if they didn't setup the event handler, regardless of the option setting
@@ -458,7 +460,7 @@ class App extends Request
                 if (!empty($oldNamespaces) && in_array($this->getNamespace(), $oldNamespaces)) {
 
                     // these headers will be added to all requests with a deprecated namespace
-                    $headers['X-Blubber-Warn']    = t('warn_deprecated_namespace');
+                    $headers['X-Blubber-Warn']    = t('deprecated.namespace');
                     $headers['X-Blubber-Upgrade'] = self::getActiveNamespace();
 
                     if (self::getOption('redirect_old_namespaces')) {
@@ -475,10 +477,10 @@ class App extends Request
                     self::emit('error', [$e]);
                 }
             } else {
-                self::emit('error', [new HTTPException(t('error_missing_response_data'), 500)]);
+                self::emit('error', [new HTTPException(t('missing.response.data'), 500)]);
             }
         } else {
-            self::emit('error', [new HTTPException(t('error_method_not_allowed'), 405, $allow_header)]);
+            self::emit('error', [new HTTPException(t('method.not.allowed'), 405, $allow_header)]);
         }
     }
 
@@ -502,7 +504,7 @@ class App extends Request
             if ($route instanceof Route) {
                 // Does the route have a valid namespace?
                 if (!$route->isValidNamespace($this)) {
-                    self::emit('error', [new HTTPException(t('error_invalid_namespace'), 403)]);
+                    self::emit('error', [new HTTPException(t('invalid.namespace'), 403)]);
                 }
 
                 $method   = strtolower(self::getRequestMethod());
@@ -511,7 +513,7 @@ class App extends Request
 
                 self::runMethodCallback($route, $callback, $params);
             } else {
-                self::emit('error', [new HTTPException(t('error_route_not_found'), 404)]);
+                self::emit('error', [new HTTPException(t('route.not.found'), 404)]);
             }
         }
     }

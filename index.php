@@ -105,7 +105,7 @@ class TestApi extends \Blubber\App
 
             // Blubber\t('') is a shortcut function for I18n::get($string)
 
-            throw new HTTPException(Blubber\t('error_auth_failed'), 401);
+            throw new HTTPException(Blubber\t('auth.failed'), 401);
         });
 
         $this->on('auth.hmac.verify', function() {
@@ -131,7 +131,7 @@ class TestApi extends \Blubber\App
 
             if ($private_key !== null) {
                 // setup our HMAC object
-                $hmac = new \Blubber\HMAC($public_key, $private_key);
+                $hmac = new \Blubber\Core\HMAC($public_key, $private_key);
 
                 //
                 // Calculate the content hash; this must be the same method the client used to hash the content.

@@ -214,7 +214,7 @@ class Response
         $headers['X-Powered-By']  = sprintf('%s/%s (%s)', \Blubber\PROJECT_NAME, \Blubber\PROJECT_VERSION, \Blubber\PROJECT_URL);
 
         if ($this->_validForSend($reqMethod) && !empty($content)) {
-            $headers['Content-Language'] = I18n::getLocale();
+            $headers['Content-Language'] = I18n::getLang();
             $headers['Content-Type']     = JSON::getContentType();
             $headers += $calcContentHeaders($data);
         }
@@ -239,6 +239,7 @@ class Response
                 ob_end_flush(); // clear inner
                 self::_processHeaders($calcContentHeaders(ob_get_contents()));
                 ob_end_flush(); // clear outer
+                exit;
             }
 
             echo $data;
