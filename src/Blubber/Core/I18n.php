@@ -24,6 +24,16 @@
 
 namespace Blubber\Core;
 
+/**
+ * I18n class
+ *
+ * Main internationalization (I18n) class.  Used for generating language packs.
+ *
+ * @author      Andrew Heebner <andrew.heebner@gmail.com>
+ * @copyright   (c)2015, Andrew Heebner
+ * @license     MIT
+ * @package     Blubber
+ */
 class I18n
 {
 
@@ -33,41 +43,101 @@ class I18n
     private static $langDir = '';
     private static $langData = [];
 
-    public static function init()
+    /**
+     * Initialize the I18n class
+     *
+     * @param bool $forceLang Language to force rather than accept from client
+     * @return void
+     */
+    public static function init($forceLang = false)
     {
         self::$langDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Lang' . DIRECTORY_SEPARATOR;
-
-        // find the acceptable lang and load it up
-        $langs = self::_getUserLangs();
-        foreach ($langs as $k => $l) {
-            if (self::_langExists($l)) {
-                self::$lang = $l;
-                self::$langData = json_decode(file_get_contents(self::$langDir . self::_langFileName($l)), true);
-                break;
-            }
-        }
+        self::_loadLang();
 
         // make sure we have a lang, or else we can fallback
         if (is_null(self::$lang)) {
             self::$lang = self::$fallback;
         }
+
+        // if $forceLang is enabled, make it a priority here
+        if ($forceLang || self::_langExists($forceLang)) {
+            self::$lang = $forceLang;
+        }
     }
 
+    /**
+     * Load a user-supplied language file into our default language data
+     *
+     * @param string $userData JSON-encoded string of user's language data
+     */
+    public static function loadLangData($userData)
+    {
+        /**
+         * Example: I18n::loadLangData(file_get_contents('my_lang_file-' . I18n::getLang() . '.json'));
+         */
+        if (!empty($userData)) {
+            $userData = json_decode($userData, true);
+            self::$langData = array_merge(self::$langData, $userData);
+        }
+    }
+
+    /**
+     * Load language data into memory
+     *
+     * @return void
+     */
+    private function _loadLang()
+    {
+        // find the acceptable lang and load it up
+        $langs = self::_getUserLangs();
+
+        foreach ($langs as $k => $l) {
+            if (self::_langExists($l)) {
+                self::$lang = strtolower($l);
+                self::$langData = json_decode(file_get_contents(self::$langDir . self::_langFileName($l)), true);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Get a specified string from language data
+     *
+     * @param string $key
+     * @return null|string
+     */
     public static function get($key)
     {
         return isset(self::$langData[$key]) ? self::$langData[$key]: null;
     }
 
+    /**
+     * Get the currently used language
+     *
+     * @return null
+     */
     public static function getLang()
     {
-        return is_null(self::$lang) ? self::$fallback : self::$lang;
+        return self::$lang;
     }
 
+    /**
+     * Generate the language filename
+     *
+     * @param string $lang
+     * @return string
+     */
     private static function _langFileName($lang)
     {
         return 'lang_' . strtolower($lang) . '.json';
     }
 
+    /**
+     * Check to see if a language file exists
+     *
+     * @param string $lang
+     * @return bool
+     */
     private static function _langExists($lang)
     {
         if (file_exists(self::$langDir . self::_langFileName($lang))) {
@@ -77,6 +147,11 @@ class I18n
         return false;
     }
 
+    /**
+     * Check Accept-Language header, and set user languages
+     *
+     * @return array
+     */
     private static function _getUserLangs()
     {
         $langs = Request::getAcceptLanguage();

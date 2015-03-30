@@ -89,11 +89,10 @@ class App extends Request
         static::$_requestPath     = self::normalizePath($_SERVER['REQUEST_URI']);
         static::$_requestId       = Tools::generateUUID();
 
-        // TODO: allow user to switch this off or force a language.
         //
         // Get I18n ready for strings
         //
-        I18n::init();
+        I18n::init(self::getOption('force_user_language'));
 
         self::_handleEvents();
 
@@ -155,6 +154,7 @@ class App extends Request
             'require_user_agent'      => false,
             'redirect_old_namespaces' => true,
             'require_https'           => true,
+            'force_user_language'     => 'en',
         ];
 
         foreach ($options as $option => $value) {
