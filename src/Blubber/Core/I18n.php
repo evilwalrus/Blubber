@@ -46,10 +46,10 @@ class I18n
     /**
      * Initialize the I18n class
      *
-     * @param bool $forceLang Language to force rather than accept from client
+     * @param null|string $forceLang Language to force rather than accept from client (null if none)
      * @return void
      */
-    public static function init($forceLang = false)
+    public static function init($forceLang = null)
     {
         self::$langDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Lang' . DIRECTORY_SEPARATOR;
         self::_loadLang();
@@ -60,7 +60,7 @@ class I18n
         }
 
         // if $forceLang is enabled, make it a priority here
-        if ($forceLang || self::_langExists($forceLang)) {
+        if (is_string($forceLang) && self::_langExists($forceLang)) {
             self::$lang = $forceLang;
         }
     }
