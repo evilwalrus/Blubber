@@ -77,7 +77,7 @@ class TestApi extends \Blubber\App
         });
 
         // dummy callback, just shows how to add return headers to a response
-        $this->on('__RATE__', function($remoteAddr) {
+        $this->on('rate.limit', function($remoteAddr) {
             // .. do something with the remoteAddr to get the rateLimit
 
             //
@@ -191,9 +191,9 @@ class TestApi extends \Blubber\App
         });
 
         // send the request headers back to the user
-        $this->route('/headers/?:withNamespace', function() {
+        $this->route('/headers/*withNamespace', function() {
             $this->get(function ($request, $response, $params) {
-                $rateHeaders = $this->emit('__RATE__', [$request->getRemoteAddr()]);
+                $rateHeaders = $this->emit('rate.limit', [$request->getRemoteAddr()]);
 
                 if (isset($params['withNamespace'])) {
                     $rateHeaders['X-Namespace'] = $request->getNamespace();
@@ -291,7 +291,7 @@ class TestApi extends \Blubber\App
     {
         // first param is required, second is optional
         //  - second will only be set if it exists
-        $this->route('/users/:user_name/?:user_action', function() {
+        $this->route('/users/!user_name/*user_action', function() {
             $this->get(function($request, $response, $params) {
                 $response->write(200, $params);
                 return $response;

@@ -94,20 +94,26 @@ class Route
     public function getPathRegexp()
     {
         $regexp = [];
+        $required = '!';
+        $optional = '*';
 
         if ($this->_path != '/') {
             $parts = explode('/', $this->_path);
 
             foreach ($parts as $section) {
-                if ($section[0] !== ':' && $section[0] !== '?') {
+                if ($section[0] !== $required && $section[0] !== $optional) {
                     $regexp[] = $section;
                 } else {
                     $regexp[] = '(/[^/]+)';
 
-                    if ($section[0] === '?') {
+                    if ($section[0] === $optional) {
                         $regexp[] = '?';
                     }
                 }
+            }
+
+            if (count($regexp) == 1) {
+                $regexp[0] = '^' . $regexp[0] . '([\/\?].*)?$';
             }
 
             return '#' . join('', $regexp) . '#';
@@ -182,11 +188,11 @@ class Route
         $request = explode('/', $requestPath[0]);
 
         foreach ($params as $k => $v) {
-            if (substr($v, 0, 1) == ':') {
+            if (substr($v, 0, 1) == '!') {
                 $val = substr($v, 1);
                 $obj[$val] = isset($request[$k]) ? $request[$k] : null;
-            } elseif (substr($v, 0, 2) == '?:' && isset($request[$k])) {
-                $val = substr($v, 2);
+            } elseif (substr($v, 0, 1) == '*' && isset($request[$k])) {
+                $val = substr($v, 1);
                 $obj[$val] = $request[$k];
             }
         }
@@ -238,7 +244,7 @@ class Route
      */
     public function isValidPath($requestPath)
     {
-        return !!preg_match($this->getPathRegexp(), $requestPath);
+        return preg_match($this->getPathRegexp(), $requestPath);
     }
 
     /**

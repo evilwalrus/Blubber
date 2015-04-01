@@ -92,7 +92,7 @@ class App extends Request
         //
         // Get I18n ready for strings
         //
-        I18n::init(self::getOption('force_user_language'));
+        I18n::init();
 
         self::_handleEvents();
 
@@ -263,7 +263,7 @@ class App extends Request
     /**
      * Name the current route (internally)
      *
-     * @param $route_name
+     * @param string $route_name
      */
     public function name($route_name)
     {
@@ -422,6 +422,7 @@ class App extends Request
             // allow all requests if they didn't setup the event handler, regardless of the option setting
         }
     }
+
     /**
      * Runs a callback for a specified HTTP method
      *
@@ -432,10 +433,11 @@ class App extends Request
      */
     protected function runMethodCallback(Route $route, $callback, $params)
     {
-        $closure = $callback['callback'];
         $allow_header = ['Allow' => strtoupper(join(', ', $route->getAvailableMethods()))];
 
         if (!is_null($callback) && is_array($callback)) {
+
+            $closure = $callback['callback'];
 
             try {
                 $response = call_user_func_array($closure->bindTo($this, $this), [$this, new Response(), $params]);
@@ -457,7 +459,7 @@ class App extends Request
                 // Add a deprecation warning header if we are using a deprecated namespace
                 $oldNamespaces = self::getDeprecatedNamespaces();
 
-                if (!empty($oldNamespaces) && in_array($this->getNamespace(), $oldNamespaces)) {
+                if (!empty($oldNamespaces) && in_array(self::getNamespace(), $oldNamespaces)) {
 
                     // these headers will be added to all requests with a deprecated namespace
                     $headers['X-Blubber-Warn']    = t('deprecated.namespace');
