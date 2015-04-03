@@ -86,7 +86,7 @@ class I18n
      *
      * @return void
      */
-    private function _loadLang()
+    private static function _loadLang()
     {
         // find the acceptable lang and load it up
         $langs = self::_getUserLangs();
