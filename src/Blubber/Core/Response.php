@@ -195,7 +195,7 @@ class Response
         $content = self::getContent();
         $data = JSON::encode($content);
 
-        $reqMethod = strtolower(App::getRequestMethod());
+        $reqMethod = strtolower(Request::getRequestMethod());
         $headers = array_merge($this->_headers, $addedHeaders);
 
         $calcContentHeaders = function($data) {
@@ -219,7 +219,16 @@ class Response
             $headers += $calcContentHeaders($data);
         }
 
-        $headers['X-Request-ID'] = App::getRequestId();
+        $headers['X-Request-ID'] = Request::getRequestId();
+
+        // security headers
+        $headers['X-Frame-Options'] = 'sameorigin';
+        $headers['X-XSS-Protection'] = '1; mode=block';
+        $headers['X-Content-Type-Options'] = 'nosniff';
+
+        if (Request::isSecure()) {
+            $headers['Strict-Transport-Security'] = 'max-age=15768000; includeSubDomains';
+        }
 
         // process and output all of our response headers
         self::_processHeaders($headers);
@@ -243,6 +252,7 @@ class Response
             }
 
             echo $data;
+            exit;
         }
     }
 
