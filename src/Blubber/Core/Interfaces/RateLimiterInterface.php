@@ -22,29 +22,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Blubber\Core;
+namespace Blubber\Core\Interfaces;
 
 
-class Tools
+interface RateLimiterInterface
 {
-
-    public static function debug($data = [])
-    {
-        (new Response())->write(200, $data)->send(['X-Blubber-Debug' => 'on']);
-    }
-
-    public static function generateUUID()
-    {
-        return sprintf('%04x%04x:%04x:%04x%03x:%04x%04x',
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-            mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff));
-    }
-
-    public static function shortHash($string)
-    {
-        return crc32($string);
-    }
-
+    public function getUserLimit();
+    public function getUserReset();
+    public function getReset();
+    public function getLimit();
+    public function getKey();
+    public function setKey($key);
 }
