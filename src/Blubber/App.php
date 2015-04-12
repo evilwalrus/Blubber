@@ -521,7 +521,6 @@ class App extends Request
                                 $this->_authenticated = $hook;
                                 break;
                             } catch (HTTPException $ex) {
-                                $failedAuth['X-Failed-Auth'] .= ',' . $hook;
                                 continue;
                             }
                         }
